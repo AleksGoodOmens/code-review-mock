@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f0f0f0;
+    background-color: var(--color-bg-main);
     font-family: Arial, sans-serif;
   }
   
@@ -14,7 +14,7 @@ body {
   }
   
   canvas {
-    background-color: #000;
+    background-color: var(--color-secondary);
     display: block;
     margin: 0 auto;
     border-radius: 5px;
@@ -24,7 +24,7 @@ body {
     position: absolute;
     top: 10px;
     width: 100%;
-    color: white;
+    color: var(--color-primary);
     font-size: 24px;
     text-align: center;
   }
