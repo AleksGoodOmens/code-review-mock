@@ -3,7 +3,7 @@ import Paddle from './paddle';
 
 export default class Game {
   private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;  // SPECIAL for Alex We using Canvas Lol
+  private ctx: CanvasRenderingContext2D;
   private ball: Ball;
   private playerPaddle: Paddle;
   private aiPaddle: Paddle;
@@ -11,6 +11,9 @@ export default class Game {
   private aiScore: number;
   private gameRunning: boolean;
   private keys: { [key: string]: boolean };
+  private paddleColor: string;
+  private ballColor: string;
+  private textColor: string;
   
   constructor(canvasId: string) {
     this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
@@ -18,13 +21,18 @@ export default class Game {
     
     this.canvas.width = 800;
     this.canvas.height = 500;
+
+    const computedStyle = getComputedStyle(document.documentElement);
+    this.paddleColor = computedStyle.getPropertyValue('--color-paddle').trim();
+    this.ballColor = computedStyle.getPropertyValue('--color-ball').trim();
+    this.textColor = computedStyle.getPropertyValue('--color-text').trim();
     
     const ballX = this.canvas.width / 2;
     const ballY = this.canvas.height / 2;
     
-    this.ball = new Ball(ballX, ballY, 10, 5, 5);
+    this.ball = new Ball(ballX, ballY, 10, 5, 5, this.ballColor);
     
-    const paddleWidth = 10;
+    const paddleWidth = 12;
     const paddleHeight = 100;
     const paddleSpeed = 8;
     
@@ -33,7 +41,8 @@ export default class Game {
       this.canvas.height / 2 - paddleHeight / 2,
       paddleWidth,
       paddleHeight,
-      paddleSpeed
+      paddleSpeed,
+      this.paddleColor
     );
     
     this.aiPaddle = new Paddle(
@@ -41,7 +50,8 @@ export default class Game {
       this.canvas.height / 2 - paddleHeight / 2,
       paddleWidth,
       paddleHeight,
-      paddleSpeed
+      paddleSpeed,
+      this.paddleColor
     );
     
     this.playerScore = 0;
@@ -86,7 +96,6 @@ export default class Game {
   }
   
   private checkCollision(): void {
-    // Player paddle
     if (
       this.ball.getX() - this.ball.getRadius() <= this.playerPaddle.getX() + this.playerPaddle.getWidth() &&
       this.ball.getY() >= this.playerPaddle.getY() &&
@@ -95,9 +104,9 @@ export default class Game {
     ) {
       this.ball.reverseX();
       this.ball.increaseSpeed();
+      this.createCollisionEffect(this.ball.getX(), this.ball.getY());
     }
-    
-    // BOT paddle here TO DO
+
     if (
       this.ball.getX() + this.ball.getRadius() >= this.aiPaddle.getX() &&
       this.ball.getY() >= this.aiPaddle.getY() &&
@@ -106,7 +115,16 @@ export default class Game {
     ) {
       this.ball.reverseX();
       this.ball.increaseSpeed();
+      this.createCollisionEffect(this.ball.getX(), this.ball.getY());
     }
+  }
+  
+  private createCollisionEffect(x: number, y: number): void {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, 30, 0, Math.PI * 2);
+    this.ctx.fillStyle = 'rgba(255, 0, 255, 0.2)';
+    this.ctx.fill();
+    this.ctx.closePath();
   }
   
   private checkScore(): void {
@@ -126,24 +144,44 @@ export default class Game {
   }
   
   private drawScore(): void {
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.font = '32px Arial';
+    this.ctx.fillStyle = this.textColor;
+    this.ctx.font = '32px Orbitron, monospace';
     this.ctx.textAlign = 'center';
     this.ctx.fillText(`${this.playerScore} - ${this.aiScore}`, this.canvas.width / 2, 50);
+
+    this.ctx.shadowColor = this.paddleColor;
+    this.ctx.shadowBlur = 10;
+    this.ctx.fillText(`${this.playerScore} - ${this.aiScore}`, this.canvas.width / 2, 50);
+    this.ctx.shadowBlur = 0;
+  }
+  
+  private drawCenterLine(): void {
+    this.ctx.setLineDash([10, 15]);
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.canvas.width / 2, 0);
+    this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
+    this.ctx.strokeStyle = 'rgba(255, 0, 255, 0.3)';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+    this.ctx.setLineDash([]);
   }
   
   private drawInstructions(): void {
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.font = '24px Arial';
+    this.ctx.fillStyle = this.textColor;
+    this.ctx.font = '24px Orbitron, monospace';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText('Click to Start', this.canvas.width / 2, this.canvas.height / 2);
-    this.ctx.font = '16px Arial';
-    this.ctx.fillText('Use W/S or Arrow Up/Down to move', this.canvas.width / 2, this.canvas.height / 2 + 30);
+    this.ctx.fillText('CLICK TO START', this.canvas.width / 2, this.canvas.height / 2);
+    
+    this.ctx.shadowColor = this.ballColor;
+    this.ctx.shadowBlur = 10;
+    this.ctx.fillText('CLICK TO START', this.canvas.width / 2, this.canvas.height / 2);
+    this.ctx.shadowBlur = 0;
   }
   
   private draw(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
+    this.drawCenterLine();
     this.playerPaddle.draw(this.ctx);
     this.aiPaddle.draw(this.ctx);
     this.ball.draw(this.ctx);
