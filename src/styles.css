@@ -1,0 +1,115 @@
+:root {
+  --color-bg: #0c0c1d;
+  --color-grid: rgba(33, 68, 116, 0.15);
+  --color-neon-pink: #ff00ff;
+  --color-neon-blue: #00ffff;
+  --color-neon-purple: #9d00ff;
+  --color-text: #ffffff;
+  --color-paddle: #ff00ff;
+  --color-ball: #00ffff;
+  --color-glow: rgba(255, 0, 255, 0.7);
+  --color-score: #ff00ff;
+  --font-retro: 'Orbitron', 'Press Start 2P', monospace, sans-serif;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--color-bg);
+  font-family: var(--font-retro);
+  overflow: hidden;
+  color: var(--color-text);
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: -1;
+  perspective: 500px;
+  transform: rotateX(45deg);
+  transform-origin: center top;
+  animation: grid-animation 15s linear infinite;
+}
+
+@keyframes grid-animation {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 20px;
+  }
+}
+
+.game-container {
+  position: relative;
+  border: 3px solid var(--color-neon-purple);
+  border-radius: 8px;
+  box-shadow: 
+    0 0 10px var(--color-neon-purple),
+    0 0 20px var(--color-neon-purple);
+  padding: 5px;
+}
+
+canvas {
+  background-color: var(--color-bg);
+  display: block;
+  margin: 0 auto;
+  border-radius: 5px;
+}
+
+.score {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  color: var(--color-score);
+  font-size: 32px;
+  text-align: center;
+  text-shadow: 
+    0 0 5px var(--color-score),
+    0 0 10px var(--color-score);
+  letter-spacing: 2px;
+}
+
+.title {
+  position: absolute;
+  top: -60px;
+  width: 100%;
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--color-neon-pink);
+  text-shadow: 
+    0 0 5px var(--color-neon-pink),
+    0 0 10px var(--color-neon-pink),
+    0 0 15px var(--color-neon-pink);
+  letter-spacing: 4px;
+  transform: perspective(500px) rotateX(15deg);
+}
+
+.instructions {
+  position: absolute;
+  bottom: -80px;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-neon-blue);
+  text-shadow: 
+    0 0 5px var(--color-neon-blue),
+    0 0 10px var(--color-neon-blue);
+  letter-spacing: 1px;
+}
